@@ -1,7 +1,7 @@
 {
   "name": "instascan",
   "version": "2.0.0",
-  "description": "Webcam-driven QR code scanner.",
+  "description": "Webcam-driven 2d barcode scanner.",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +16,8 @@
   "keywords": [
     "qr",
     "code",
+    "2d barcode",
+    "data matrix",
     "quick",
     "response",
     "scan",

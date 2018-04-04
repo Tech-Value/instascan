@@ -1,5 +1,5 @@
 # ![Instascan](https://raw.githubusercontent.com/schmich/instascan/master/assets/qr.png) Instascan
-Real-time webcam-driven HTML5 QR code scanner. [Try the live demo](https://schmich.github.io/instascan/).
+Real-time webcam-driven HTML5 2D barcode scanner. [Try the live demo](https://schmich.github.io/instascan/).
 
 ## Installing
 
@@ -66,8 +66,8 @@ Create a new scanner with options:
 
 ```javascript
 let opts = {
-  // Whether to scan continuously for QR codes. If false, use scanner.scan() to manually scan.
-  // If true, the scanner emits the "scan" event when a QR code is scanned. Default true.
+  // Whether to scan continuously for 2D barcodes. If false, use scanner.scan() to manually scan.
+  // If true, the scanner emits the "scan" event when a 2D barcode is scanned. Default true.
   continuous: true,
   
   // The HTML element to use for the camera's video preview. Must be a <video> element.
@@ -77,7 +77,7 @@ let opts = {
   video: document.getElementById('preview'),
   
   // Whether to horizontally mirror the video preview. This is helpful when trying to
-  // scan a QR code with a user-facing camera. Default true.
+  // scan a 2D barcode with a user-facing camera. Default true.
   mirror: true,
   
   // Whether to include the scanned image data as part of the scan result. See the "scan" event
@@ -88,7 +88,7 @@ let opts = {
   // When false, this reduces CPU usage when the tab is not active. Default true.
   backgroundScan: true,
   
-  // Only applies to continuous mode. The period, in milliseconds, before the same QR code
+  // Only applies to continuous mode. The period, in milliseconds, before the same 2D barcode
   // will be recognized in succession. Default 5000 (5 seconds).
   refractoryPeriod: 5000,
   
@@ -115,18 +115,18 @@ let opts = {
 
 ### let result = scanner.scan()
 
-- Scan video immediately for a QR code.
-- QR codes recognized with this method are not emitted via the `scan` event.
-- If no QR code is detected, `result` is `null`.
-- `result.content`: Scanned content decoded from the QR code.
+- Scan video immediately for a 2D barcode.
+- 2D barcodes recognized with this method are not emitted via the `scan` event.
+- If no 2D barcode is detected, `result` is `null`.
+- `result.content`: Scanned content decoded from the 2D barcode.
 - `result.image`: Undefined if [`scanner.captureImage`](#let-scanner--new-instascanscanneropts) is `false`, otherwise, see the [`scan`](#scanneraddlistenerscan-callback) event for format.
 
 ### scanner.addListener('scan', callback)
 
-- Emitted when a QR code is scanned using the camera in continuous mode (see [`scanner.continuous`](#let-scanner--new-instascanscanneropts)).
+- Emitted when a 2D barcode is scanned using the camera in continuous mode (see [`scanner.continuous`](#let-scanner--new-instascanscanneropts)).
 - `callback`: `function (content, image)`
-  - `content`: Scanned content decoded from the QR code.
-  - `image`: `null` if [`scanner.captureImage`](#let-scanner--new-instascanscanneropts) is `false`, otherwise, a base64-encoded [WebP](https://en.wikipedia.org/wiki/WebP)-compressed data URI of the camera frame used to decode the QR code.
+  - `content`: Scanned content decoded from the 2D barcode.
+  - `image`: `null` if [`scanner.captureImage`](#let-scanner--new-instascanscanneropts) is `false`, otherwise, a base64-encoded [WebP](https://en.wikipedia.org/wiki/WebP)-compressed data URI of the camera frame used to decode the 2D barcode.
 
 ### scanner.addListener('active', callback)
 
@@ -168,20 +168,20 @@ Instascan does not work on iOS since Apple does not yet support WebRTC in WebKit
 
 ## Performance
 
-Many factors affect how quickly and reliably Instascan can detect QR codes.
+Many factors affect how quickly and reliably Instascan can detect 2D barcodes.
 
-If you control creation of the QR code, consider the following:
+If you control creation of the 2D barcode, consider the following:
 
 - A larger physical code is better. A 2" square code is better than a 1" square code.
 - Flat, smooth, matte surfaces are better than curved, rough, glossy surfaces.
-- Include a sufficient quiet zone, the white border surrounding QR code. The quiet zone should be at least four times the width of an individual element in your QR code.
-- A simpler code is better. You can use [this QR code generator](https://www.the-qrcode-generator.com/) to see how your input affects complexity.
+- Include a sufficient quiet zone, the white border surrounding 2D barcode. The quiet zone should be at least four times the width of an individual element in your 2D barcode.
+- A simpler code is better. You can use [this 2D barcode generator](https://www.the-qrcode-generator.com/) to see how your input affects complexity.
 - For the same length, numeric content is simpler than ASCII content, which is simpler than Unicode content.
 - Shorter content is simpler. If you're encoding a URL, consider using a shortener such as [goo.gl](https://goo.gl/) or [bit.ly](https://bitly.com/).
 
 When scanning, consider the following:
 
-- QR code orientation doesn't matter.
+- 2D barcode orientation doesn't matter.
 - Higher resolution video is better, but is more CPU intensive.
 - Direct, orthogonal scanning is better than scanning at an angle.
 - Blurry video greatly reduces scanner performance.
@@ -190,7 +190,7 @@ When scanning, consider the following:
 
 ## Example Setup
 
-- Purpose: To scan QR code stickers on paper cards and plastic bags.
+- Purpose: To scan 2D barcode stickers on paper cards and plastic bags.
 - Camera: [Microsoft LifeCam HD-3000](http://www.newegg.com/Product/Product.aspx?Item=9SIA4RE40S4991), 720p, fixed focus, around $30 USD.
 - Small support to ensure camera is focused on subject.
 - White paper backdrop to mitigate exposure adjustment.
