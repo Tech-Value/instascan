@@ -1,5 +1,5 @@
 const EventEmitter = require('events');
-const ZXing = require('./zxing')();
+const ZXing = require('./vendor/zxing')();
 const Visibility = require('visibilityjs');
 const StateMachine = require('fsm-as-promised');
 
@@ -34,7 +34,7 @@ class ScanProvider {
       return null;
     }
 
-    let { result, canvas } = analysis;
+    let {result, canvas} = analysis;
     if (!result) {
       return null;
     }
@@ -52,7 +52,7 @@ class ScanProvider {
 
     this._lastResult = result;
 
-    let payload = { content: result };
+    let payload = {content: result};
     if (image) {
       payload.image = image;
     }
@@ -96,14 +96,15 @@ class Analyzer {
     this.canvas.style.display = 'none';
     this.canvasContext = null;
 
-    this.decodeCallback = ZXing.Runtime.addFunction(function (ptr, len, resultIndex, resultCount) {
-      let result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
-      let str = String.fromCharCode.apply(null, result);
-      if (resultIndex === 0) {
-        window.zxDecodeResult = '';
-      }
-      window.zxDecodeResult += str;
-    });
+    this.decodeCallback = ZXing.Runtime.addFunction(
+        function (ptr, len, resultIndex, resultCount) {
+          let result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
+          let str = String.fromCharCode.apply(null, result);
+          if (resultIndex === 0) {
+            window.zxDecodeResult = '';
+          }
+          window.zxDecodeResult += str;
+        });
   }
 
   analyze() {
@@ -129,14 +130,15 @@ class Analyzer {
     }
 
     this.canvasContext.drawImage(
-      this.video,
-      this.sensorLeft,
-      this.sensorTop,
-      this.sensorWidth,
-      this.sensorHeight
+        this.video,
+        this.sensorLeft,
+        this.sensorTop,
+        this.sensorWidth,
+        this.sensorHeight
     );
 
-    let data = this.canvasContext.getImageData(0, 0, this.sensorWidth, this.sensorHeight).data;
+    let data = this.canvasContext.getImageData(0, 0, this.sensorWidth,
+        this.sensorHeight).data;
     for (let i = 0, j = 0; i < data.length; i += 4, j++) {
       let [r, g, b] = [data[i], data[i + 1], data[i + 2]];
       ZXing.HEAPU8[this.imageBuffer + j] = Math.trunc((r + g + b) / 3);
@@ -149,7 +151,7 @@ class Analyzer {
 
     let result = window.zxDecodeResult;
     if (result != null) {
-      return { result: result, canvas: this.canvas };
+      return {result: result, canvas: this.canvas};
     }
 
     return null;
@@ -171,7 +173,8 @@ class Scanner extends EventEmitter {
     let scanPeriod = opts.scanPeriod || 1;
     let refractoryPeriod = opts.refractoryPeriod || (5 * 1000);
 
-    this._scanner = new ScanProvider(this, this._analyzer, captureImage, scanPeriod, refractoryPeriod);
+    this._scanner = new ScanProvider(this, this._analyzer, captureImage,
+        scanPeriod, refractoryPeriod);
     this._fsm = this._createStateMachine();
 
     Visibility.change((e, state) => {
@@ -201,47 +204,32 @@ class Scanner extends EventEmitter {
     this.emit('inactive');
   }
 
-  scan() {
-    return this._scanner.scan();
-  }
-
-  async start(camera = null) {
-    if (this._fsm.can('start')) {
-      await this._fsm.start(camera);
-    } else {
-      await this._fsm.stop();
-      await this._fsm.start(camera);
-    }
-  }
-
-  async stop() {
-    if (this._fsm.can('stop')) {
-      await this._fsm.stop();
-    }
+  get captureImage() {
+    return this._scanner.captureImage;
   }
 
   set captureImage(capture) {
     this._scanner.captureImage = capture;
   }
 
-  get captureImage() {
-    return this._scanner.captureImage;
+  get scanPeriod() {
+    return this._scanner.scanPeriod;
   }
 
   set scanPeriod(period) {
     this._scanner.scanPeriod = period;
   }
 
-  get scanPeriod() {
-    return this._scanner.scanPeriod;
+  get refractoryPeriod() {
+    return this._scanner.refractoryPeriod;
   }
 
   set refractoryPeriod(period) {
     this._scanner.refractoryPeriod = period;
   }
 
-  get refractoryPeriod() {
-    return this._scanner.refractoryPeriod;
+  get continuous() {
+    return this._continuous;
   }
 
   set continuous(continuous) {
@@ -254,8 +242,8 @@ class Scanner extends EventEmitter {
     }
   }
 
-  get continuous() {
-    return this._continuous;
+  get mirror() {
+    return this._mirror;
   }
 
   set mirror(mirror) {
@@ -278,8 +266,23 @@ class Scanner extends EventEmitter {
     }
   }
 
-  get mirror() {
-    return this._mirror;
+  scan() {
+    return this._scanner.scan();
+  }
+
+  async start(camera = null) {
+    if (this._fsm.can('start')) {
+      await this._fsm.start(camera);
+    } else {
+      await this._fsm.stop();
+      await this._fsm.start(camera);
+    }
+  }
+
+  async stop() {
+    if (this._fsm.can('stop')) {
+      await this._fsm.stop();
+    }
   }
 
   async _enableScan(camera) {
@@ -316,7 +319,10 @@ class Scanner extends EventEmitter {
     }
 
     let video = opts.video || document.createElement('video');
-    video.setAttribute('autoplay', 'autoplay');
+
+    video.setAttribute('autoplay', true);
+    video.setAttribute('playsinline', true);
+    video.setAttribute('muted', true);
 
     return video;
   }
