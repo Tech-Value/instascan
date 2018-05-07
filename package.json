@@ -2,7 +2,7 @@
   "name": "instascan",
   "version": "2.0.0",
   "description": "Webcam-driven 2d barcode scanner.",
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
