@@ -18,21 +18,31 @@ class Camera {
   }
 
   static async getCameras(options) {
-    let defaults = {video: {facingMode: 'environment'}};
-    let constraints = Object.assign({}, defaults, options);
+    const defaults = { video: { facingMode: 'environment' } };
+    const constraints = Object.assign({}, defaults, options);
 
-    await this._ensureAccess(constraints);
+    // Mark the environment camera as busy to get priority over other applications
+    const streams = await this._ensureAccess(constraints);
 
-    let devices = await navigator.mediaDevices.enumerateDevices();
+    // Retrieve all videoinput devices
+    const devices = await navigator.mediaDevices.enumerateDevices();
 
-    return devices
-    .filter(d => d.kind === 'videoinput')
-    .map(d => new Camera(d.deviceId, cameraName(d.label)));
+    const videoDevices = devices
+      .filter(d => d.kind === 'videoinput')
+      .map(d => new Camera(d.deviceId, cameraName(d.label)));
+
+    // Release the environment camera to evade locking it
+    for (let stream of streams.getVideoTracks()) {
+      stream.stop();
+    }
+
+    // Return the list of video devices, sort by name (environment camere should be the first)
+    return videoDevices.sort((a, b) => a.name > b.name);
   }
 
   static async _ensureAccess(constraints) {
     return this._wrapErrors(async () => {
-      await navigator.mediaDevices.getUserMedia(constraints);
+      return await navigator.mediaDevices.getUserMedia(constraints);
     });
   }
 
