@@ -34,7 +34,7 @@ class ScanProvider {
       return null;
     }
 
-    let {result, canvas} = analysis;
+    let { result, canvas } = analysis;
     if (!result) {
       return null;
     }
@@ -52,7 +52,7 @@ class ScanProvider {
 
     this._lastResult = result;
 
-    let payload = {content: result};
+    let payload = { content: result };
     if (image) {
       payload.image = image;
     }
@@ -97,15 +97,15 @@ class Analyzer {
     this.canvasContext = null;
 
     if (!Analyzer.decodeCallback) {
-      Analyzer.decodeCallback = ZXing.Runtime.addFunction(
-          function (ptr, len, resultIndex, resultCount) {
-            let result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
-            let str = String.fromCharCode.apply(null, result);
-            if (resultIndex === 0) {
-              window.zxDecodeResult = '';
-            }
-            window.zxDecodeResult += str;
-          });
+      Analyzer.decodeCallback = ZXing.addFunction(
+        function (ptr, len, resultIndex, resultCount) {
+          let result = new Uint8Array(ZXing.HEAPU8.buffer, ptr, len);
+          let str = String.fromCharCode.apply(null, result);
+          if (resultIndex === 0) {
+            window.zxDecodeResult = '';
+          }
+          window.zxDecodeResult += str;
+        });
     }
   }
 
@@ -132,15 +132,15 @@ class Analyzer {
     }
 
     this.canvasContext.drawImage(
-        this.video,
-        this.sensorLeft,
-        this.sensorTop,
-        this.sensorWidth,
-        this.sensorHeight
+      this.video,
+      this.sensorLeft,
+      this.sensorTop,
+      this.sensorWidth,
+      this.sensorHeight
     );
 
     let data = this.canvasContext.getImageData(0, 0, this.sensorWidth,
-        this.sensorHeight).data;
+      this.sensorHeight).data;
     for (let i = 0, j = 0; i < data.length; i += 4, j++) {
       let [r, g, b] = [data[i], data[i + 1], data[i + 2]];
       ZXing.HEAPU8[this.imageBuffer + j] = Math.trunc((r + g + b) / 3);
@@ -153,7 +153,7 @@ class Analyzer {
 
     let result = window.zxDecodeResult;
     if (result != null) {
-      return {result: result, canvas: this.canvas};
+      return { result: result, canvas: this.canvas };
     }
 
     return null;
@@ -176,7 +176,7 @@ class Scanner extends EventEmitter {
     let refractoryPeriod = opts.refractoryPeriod || (5 * 1000);
 
     this._scanner = new ScanProvider(this, this._analyzer, captureImage,
-        scanPeriod, refractoryPeriod);
+      scanPeriod, refractoryPeriod);
     this._fsm = this._createStateMachine();
 
     Visibility.change((e, state) => {
