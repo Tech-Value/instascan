@@ -55,7 +55,7 @@ export default class ScanProvider {
     }
 
     private async analyze(result: Result): Promise<ScanPayload> {
-        let content = result.getText();
+        const content = result.getText();
         let image: string = null;
 
         if (this.captureImage) {
@@ -73,14 +73,16 @@ export default class ScanProvider {
     }
 
     private async doScan(fromLoop?: boolean) {
-        if (!this.camera)
+        if (!this.camera) {
             throw new Error("No camera set");
+        }
 
-        if (fromLoop && !this._active)
+        if (fromLoop && !this._active) {
             return null;
+        }
 
-        let result = await this._reader.decodeFromVideoElement(this._video);
-        let payload = await this.analyze(result);
+        const result = await this._reader.decodeFromVideoElement(this._video);
+        const payload = await this.analyze(result);
 
         if (payload && payload.content !== this._lastResult && this._active) {
             this._lastResult = payload.content;
@@ -97,8 +99,9 @@ export default class ScanProvider {
         }
 
         // Start next scan
-        if (fromLoop)
+        if (fromLoop) {
             setTimeout(() => this.doScan(true), this.scanPeriod);
+        }
 
         return payload;
     }
