@@ -23,9 +23,9 @@ export default class Scanner extends EventEmitter {
 		this.backgroundScan = (opts.backgroundScan !== false);
 		this._continuous = (opts.continuous !== false);
 
-		let captureImage = opts.captureImage || false;
-		let scanPeriod = opts.scanPeriod || 500;
-		let refractoryPeriod = opts.refractoryPeriod || (5 * 1000); // 5 seconds
+		const captureImage = opts.captureImage || false;
+		const scanPeriod = opts.scanPeriod || 500;
+		const refractoryPeriod = opts.refractoryPeriod || (5 * 1000); // 5 seconds
 
 		this._scanProvider = new ScanProvider(this, this.video, captureImage, scanPeriod, refractoryPeriod);
 		this._fsm = this.createStateMachine();
