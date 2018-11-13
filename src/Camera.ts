@@ -18,25 +18,26 @@ export default class Camera {
 		this._stream = null;
 	}
 
-	async start() {
-		const constraints: any = {
-			audio: false,
-			video: {
-				mandatory: {
-					sourceId: this.id,
-					minWidth: 600,
-					maxWidth: 800,
-					minAspectRatio: 1.6
-				},
-				optional: []
-			}
-		};
+	async start(facingMode) {
+    const constraints: any = {
+      audio: false,
+      video: {
+        deviceId: {
+          exact: this.id
+        },
+        optional: []
+      }
+    };
 
-		this._stream = await Camera.wrapErrors( async () => {
-			return await navigator.mediaDevices.getUserMedia( constraints );
-		} );
+    if ( facingMode && typeof facingMode === 'string' ) {
+      constraints.video.facingMode = facingMode;
+    }
 
-		return this._stream;
+    this._stream = await Camera.wrapErrors( async () => {
+      return await navigator.mediaDevices.getUserMedia( constraints );
+    } );
+
+    return this._stream;
 	}
 
 	stop() {
@@ -44,7 +45,9 @@ export default class Camera {
 			return;
 		}
 
-		this._stream.getVideoTracks().forEach(stream => stream.stop());
+		for ( const stream of this._stream.getVideoTracks() ) {
+			stream.stop();
+		}
 
 		this._stream = null;
 	}
@@ -60,9 +63,11 @@ export default class Camera {
 	}
 
 	static async ensureAccess() {
-		return await this.wrapErrors( async () => {
+		return await Camera.wrapErrors( async () => {
 			const access = await navigator.mediaDevices.getUserMedia( { video: true } );
-			access.getVideoTracks().forEach(stream => stream.stop());
+			for ( const stream of access.getVideoTracks() ) {
+				stream.stop();
+			}
 		} );
 	}
 

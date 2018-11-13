@@ -13,7 +13,7 @@ function bundle(file, release) {
     const options = { project: "tsconfig.json" };
 
     if (release)
-        options.target = "es5";
+        options.target = "es6";
 
     return browserify(file)
         .plugin(tsify, options)
@@ -37,7 +37,7 @@ gulp.task("watch", ["build"], function () {
 
 gulp.task("release", function () {
     const tsOptions = {
-        target: "es5",
+        target: "es6",
         declaration: true,
         declarationDir: "./dist"
     };
@@ -71,12 +71,4 @@ gulp.task("build", function () {
     const bundleStream = bundle("./src/instascan.ts").pipe(gulp.dest("./dist"));
 
     return merge([jsStream, dtsStream, bundleStream]);
-});
-
-gulp.task('release', ['build-package'], function () {
-  return build('./export.js')
-  .pipe(buffer())
-  .pipe(uglify())
-  .pipe(rename({suffix: '.min'}))
-  .pipe(gulp.dest('./dist/'));
 });
