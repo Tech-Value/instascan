@@ -17,7 +17,8 @@ var app = new Vue({
       self.cameras = cameras;
       if (cameras.length > 0) {
         self.activeCameraId = cameras[0].id;
-        self.scanner.start(cameras[0]);
+        self.scanner.camera = cameras[0];
+        self.scanner.start();
       } else {
         console.error('No cameras found.');
       }
@@ -31,7 +32,8 @@ var app = new Vue({
     },
     selectCamera: function (camera) {
       this.activeCameraId = camera.id;
-      this.scanner.start(camera);
+      this.scanner.camera = camera;
+      this.scanner.start();
     }
   }
 });
