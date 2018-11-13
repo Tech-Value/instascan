@@ -25,7 +25,7 @@ export default class ZxingWrapper {
 
     private reset() {
         // Reset part of the reader's state (not all of it)
-        let reader = this._reader;
+        const reader = this._reader;
 
         reader.videoElement = undefined;
         reader.canvasElement = undefined;
@@ -39,7 +39,7 @@ export default class ZxingWrapper {
                 videoElement.width = 640;
                 videoElement.height = 480;
             }
-            
+
             this.reset();
             this._reader.videoElement = videoElement;
             this._reader.decodeOnceWithDelay(resolve, reject);
